@@ -1,4 +1,4 @@
-('C:\\Users\\ethan\\OneDrive\\Documents\\GitHub\\Dendy-Studio-Qt\\src\\build\\app\\PYZ-00.pyz',
+('C:\\Users\\ethan\\OneDrive\\documents\\GitHub\\Dendy-Studio-Qt\\src\\build\\app\\PYZ-00.pyz',
  [('PyQt5',
    'C:\\Users\\ethan\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\PyQt5\\__init__.py',
    'PYMODULE'),

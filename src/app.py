@@ -356,20 +356,19 @@ class MainWindow(QMainWindow):
 
         code = self.code_editor.toPlainText()
 
-        with open("main.cpp", "w", encoding="utf-8") as f:
+        if not os.path.exists("temp"):
+            os.makedirs("temp")
+        with open(os.path.join("temp", "main.cpp"), "w", encoding="utf-8") as f:
             f.write(code)
-
-        compile_command = "zig\\zig.exe c++ main.cpp -o main -Iraylib/include -Lraylib/lib -lraylib -lopengl32 -lgdi32 -lwinmm"
-        self.console.appendPlainText(f"Executing: {compile_command}\n")
 
         self.status_bar.showMessage("Compiling...")
         process = subprocess.Popen(
             [
                 "zig\\zig.exe",
                 "c++",
-                "main.cpp",
+                "temp\\main.cpp",
                 "-o",
-                "main",
+                "temp\\main.exe",
                 "-Iraylib/include",
                 "-Lraylib/lib",
                 "-lraylib",
@@ -400,7 +399,7 @@ class MainWindow(QMainWindow):
             self.console.appendPlainText("\n--- Program Output ---")
 
             run_process = subprocess.Popen(
-                ["./main"],
+                ["temp\\main.exe"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
@@ -476,24 +475,28 @@ def publish_project(self):
         )
         return
 
-    dest_dir = QFileDialog.getExistingDirectory(
+    base_dir = QFileDialog.getExistingDirectory(
         self,
-        "Select Publish Location",
+        "Select Project Location",
         os.path.expanduser("~"),
         QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks,
     )
 
-    if not dest_dir:
+    if not base_dir:
         return
 
+    # Combine base directory with the new directory name
+    project_name = os.path.basename(self.project_dir)
+    publish_dir = os.path.join(base_dir, project_name)
+
     try:
-        project_name = os.path.basename(self.project_dir)
-        publish_dir = os.path.join(dest_dir, f"{project_name}_published")
 
+        # Create the new directory
         os.makedirs(publish_dir, exist_ok=True)
+        print(f"Created new directory: {publish_dir}")
 
+        # You can still append your project name logic if needed        
         self.save_file()
-
         self.status_bar.showMessage("Building executable for publishing...")
         self.console.appendPlainText("Building executable for publishing...")
 
@@ -511,8 +514,7 @@ def publish_project(self):
                 "-lraylib",
                 "-lopengl32",
                 "-lgdi32",
-                "-lwinmm",
-                "-O2",
+                "-lwinmm"
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -572,7 +574,7 @@ def show_help_dialog(self):
     layout.addWidget(desc_label)
 
     link_label = QLabel(
-        '<a href="https://cinemint.online/dendy/studio">Online Documentation</a>'
+        '<a href="https://cinemint.online">https://cinemint.online</a>'
     )
     link_label.setOpenExternalLinks(True)
     layout.addWidget(link_label)
